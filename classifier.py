@@ -1,13 +1,14 @@
 from os import path                                                     # verify whether the init file exists
 from random import randrange                                            # random coordinates of points
 from math import sqrt                                                   # to calculate the distance between two points
+import matplotlib.pyplot as graph                                       # to plot and show graphs of classified points
 
 points_dict = {}                                                        # all poits are stored here
 TOTAL_GENERATED = 0                                                     # number of generated points for the classifier
 NEIGHBORS_MAX = 0                                                       # max length of the closest point list
 INITIAL = 'I'                                                           # color tag representing a file-loaded point
 CLASSIFY = 'C'                                                          # representing a point not yet classified
-
+VISUALIZE = 0                                                           # visualisation ON/OFF switch
 RED = 0                                                                 # color codes
 GREEN = 1
 BLUE = 2
@@ -97,6 +98,22 @@ def color_by_mod(mod):                                                  # return
         return 'P'
 
 
+def get_color_name(point):                                              # return the color of a ponit for graph plotting
+    if points_dict[point].class_color == INITIAL:                       # points from init file are displayed as black
+        return 'black'
+    else:
+        color = points_dict[point].class_color
+
+    if color == 'R':
+        return 'red'
+    elif color == 'G':
+        return 'green'
+    elif color == 'B':
+        return 'blue'
+    elif color == 'P':
+        return 'purple'
+
+
 def euclidean(a, b):                                                    # calculates the distance between two points
     return sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)                    # euclidean distance via the Pythagoras theorem
 
@@ -172,6 +189,9 @@ while 1:                                                                # main m
             print('Specify the number of points to be classified')
             TOTAL_GENERATED = int(input())
 
+            print('Graph ON = 1\nGraph OFF = 0')
+            VISUALIZE = int(input())
+
             print('Specify the k values [k1 k2 k3 ... kN]')
             k_values = input().split()
 
@@ -183,6 +203,10 @@ while 1:                                                                # main m
 
             for value in k_values:                                      # execute the knn function for each input value
                 knn(int(value))
+                if VISUALIZE:                                           # plot graphs for each knn() value
+                    for entry in points_dict:
+                        graph.scatter(entry[0], entry[1], c=get_color_name(entry))
+                    graph.show()
 
             points_dict.clear()
 
