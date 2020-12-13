@@ -4,11 +4,14 @@ from math import sqrt                                                   # to cal
 import matplotlib.pyplot as graph                                       # to plot and show graphs of classified points
 
 points_dict = {}                                                        # all poits are stored here
+x_list = []                                                             # stores all x coordinates for graph output
+y_list = []                                                             # stores all y coordinates for graph output
+color_list = []                                                         # stores all point colors for graph output
+VISUALIZE = 0                                                           # visualisation ON/OFF switch
 TOTAL_GENERATED = 0                                                     # number of generated points for the classifier
 NEIGHBORS_MAX = 0                                                       # max length of the closest point list
 INITIAL = 'I'                                                           # color tag representing a file-loaded point
 CLASSIFY = 'C'                                                          # representing a point not yet classified
-VISUALIZE = 0                                                           # visualisation ON/OFF switch
 RED = 0                                                                 # color codes
 GREEN = 1
 BLUE = 2
@@ -176,6 +179,7 @@ def knn(k):                                                             # handle
             if points_dict[key].class_color == points_dict[key].real_color:
                 stat += 1                                               # counts correctly classified points
     print('[DONE] k-nn: Correctly classified points:', '%.2f' % (stat / TOTAL_GENERATED * 100), '%\n')
+    return '%.2f' % (stat / TOTAL_GENERATED * 100)
 
 
 while 1:                                                                # main menu
@@ -202,11 +206,18 @@ while 1:                                                                # main m
             generate_points()
 
             for value in k_values:                                      # execute the knn function for each input value
-                knn(int(value))
+                accuracy = knn(int(value))
                 if VISUALIZE:                                           # plot graphs for each knn() value
                     for entry in points_dict:
-                        graph.scatter(entry[0], entry[1], c=get_color_name(entry))
+                        x_list.append(entry[0])
+                        y_list.append(entry[1])
+                        color_list.append(get_color_name(entry))
+                    graph.scatter(x_list, y_list, c=color_list)
+                    graph.title('k = ' + value + ', N = ' + str(TOTAL_GENERATED) + ', accuracy ' + accuracy + '%')
                     graph.show()
+                    x_list.clear()                                      # resets the graph lists
+                    y_list.clear()
+                    color_list.clear()
 
             points_dict.clear()
 
